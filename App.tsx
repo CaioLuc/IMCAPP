@@ -8,19 +8,17 @@ export default function App() {
     // HOOKS
     const [peso, setPeso] = useState<string>("");
     const [altura, setAltura] = useState<string>("");
-    const [imc, setIMC] = useState<number | null>(null);
-    const [classificacao, setClassificacao] = useState<string | null>(null);
+    const [imc, setIMC] = useState<number | undefined>(undefined);
+    const [classificacao, setClassificacao] = useState<string | undefined>(undefined);
     
-    // Novo Hook para controlar a mensagem de erro
     const [mensagemErro, setMensagemErro] = useState<string | null>(null);
 
-    // Função para validar os campos antes de calcular o IMC
     function validarCampos() {
-        // Verifica se os campos estão vazios ou se não são numeros validos
+       
         if (!peso.trim() || !altura.trim() || isNaN(parseFloat(peso)) || isNaN(parseFloat(altura))) {
             setMensagemErro("Preencha o peso e a altura");
-            setIMC(null); // limpa o resultado anterior caso tenha  erro
-            setClassificacao(null);
+            setIMC(undefined); 
+            setClassificacao(undefined);
         } else {
             setMensagemErro(null); 
             calcularIMC(); 
