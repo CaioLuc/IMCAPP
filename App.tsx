@@ -5,11 +5,27 @@ import { Topo } from './components/Topo';
 import { Resultado } from './components/Resultado';
 
 export default function App() {
-    // HOOK
+    // HOOKS
     const [peso, setPeso] = useState<string>("");
     const [altura, setAltura] = useState<string>("");
     const [imc, setIMC] = useState<number | null>(null);
     const [classificacao, setClassificacao] = useState<string | null>(null);
+    
+    // Novo Hook para controlar a mensagem de erro
+    const [mensagemErro, setMensagemErro] = useState<string | null>(null);
+
+    // Função para validar os campos antes de calcular o IMC
+    function validarCampos() {
+        // Verifica se os campos estão vazios ou se não são numeros validos
+        if (!peso.trim() || !altura.trim() || isNaN(parseFloat(peso)) || isNaN(parseFloat(altura))) {
+            setMensagemErro("Preencha o peso e a altura");
+            setIMC(null); // limpa o resultado anterior caso tenha  erro
+            setClassificacao(null);
+        } else {
+            setMensagemErro(null); 
+            calcularIMC(); 
+        }
+    }
 
     function calcularIMC() {
         let imcCalculado = parseFloat(peso) / (parseFloat(altura) * parseFloat(altura));
@@ -32,16 +48,20 @@ export default function App() {
             <Topo />
 
             <View style={styles.form}>
+                {/* Exibe o alerta acima do formulário caso exista um erro */}
+                {mensagemErro && <Text style={styles.erro}>{mensagemErro}</Text>}
+
                 <Text style={styles.label}>Peso</Text>
-                <TextInput style={styles.input} onChangeText={setPeso}></TextInput>
+                {/* Foi adicionado keyboardType para facilitar a digitação de números */}
+                <TextInput style={styles.input} onChangeText={setPeso} keyboardType="numeric"></TextInput>
 
                 <Text style={styles.label}>Altura</Text>
-                <TextInput style={styles.input} onChangeText={setAltura}></TextInput>
+                <TextInput style={styles.input} onChangeText={setAltura} keyboardType="numeric"></TextInput>
 
-                <TouchableOpacity style={styles.btn} onPress={calcularIMC}>
+                {/* O botão agora chama a função validarCampos em vez de calcularIMC diretamente */}
+                <TouchableOpacity style={styles.btn} onPress={validarCampos}>
                     <Text style={styles.btnText}>Calcular</Text>
                 </TouchableOpacity>
-
 
                 <Resultado imc={imc} classificacao={classificacao} />
 
@@ -87,5 +107,12 @@ const styles = StyleSheet.create({
         color: '#FFF',
         fontSize: 22
     },
-
+    // Novo estilo para o texto de alerta
+    erro: {
+        color: 'red',
+        fontSize: 18,
+        textAlign: 'center',
+        marginBottom: 15,
+        fontWeight: 'bold'
+    }
 });
